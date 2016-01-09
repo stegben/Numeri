@@ -35,11 +35,16 @@ def to_array(df):
     return x, y
 
 
-def write_ans(model, df, ofname):
-    ans = model.predict_proba(df.ix[:,1:].as_matrix())[:, 1]
+def write_ans(model, df, ofname, scaler=None):
+    X_test = df.ix[:,1:].as_matrix()
+    if scaler is not None:
+        X_test = scaler.transform(X_test)
+    ans = model.predict_proba(X_test)
+    ans = ans.flatten()
+    print(ans)
     t_id = df["t_id"]
     output = pd.DataFrame({'t_id':t_id, 'probability':ans}, columns=['t_id', 'probability'])
     print("output: ")
     print(output)
-    output.to_csv(ofname, index=False)
+    output.to_csv(ofname, index=False, float_format='%2.8f')
     
